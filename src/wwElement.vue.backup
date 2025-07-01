@@ -2,11 +2,11 @@
   <button
     :class="toggleClasses"
     :aria-pressed="isPressed"
-    :disabled="disabled"
+    :disabled="content.disabled"
     @click="handleToggle"
   >
-    <component v-if="icon" :is="icon" />
-    <span v-if="text">{{ text }}</span>
+    <component v-if="content.icon" :is="content.icon" />
+    <span v-if="content.text">{{ content.text }}</span>
     <slot />
   </button>
 </template>
@@ -39,7 +39,7 @@ export default {
   emits: ['update:modelValue', 'change'],
   setup(props, { emit }) {
     const isPressed = computed(() => {
-      return props.modelValue !== null ? props.modelValue : props.pressed
+      return props.modelValue !== null ? props.modelValue : props.content.pressed
     })
 
     const variantClasses = {
@@ -58,36 +58,36 @@ export default {
       "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors hover:bg-muted hover:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
       
       // Variant classes
-      variantClasses[props.variant] || variantClasses.default,
+      variantClasses[props.content.variant] || variantClasses.default,
       
       // Size classes
-      sizeClasses[props.size] || sizeClasses.default,
+      sizeClasses[props.content.size] || sizeClasses.default,
       
       // State classes
       {
         "bg-accent text-accent-foreground": isPressed.value,
-        "gap-2": props.text && props.icon
+        "gap-2": props.content.text && props.content.icon
       },
       
       // Custom classes
-      props.customClasses
+      props.content.customClasses
     ))
 
     const handleToggle = () => {
-      if (props.disabled) return
+      if (props.content.disabled) return
 
       const newPressed = !isPressed.value
       emit('update:modelValue', newPressed)
       emit('change', newPressed)
 
       // Update Weweb variable if defined
-      if (props.wewebVariable && typeof wwLib !== 'undefined') {
-        wwLib.wwVariable.updateValue(props.wewebVariable, newPressed)
+      if (props.content.wewebVariable && typeof wwLib !== 'undefined') {
+        wwLib.wwVariable.updateValue(props.content.wewebVariable, newPressed)
       }
 
       // Execute Weweb workflow if defined
-      if (props.changeWorkflowId && typeof wwLib !== 'undefined') {
-        wwLib.executeWorkflow(props.changeWorkflowId)
+      if (props.content.changeWorkflowId && typeof wwLib !== 'undefined') {
+        wwLib.executeWorkflow(props.content.changeWorkflowId)
       }
     }
 
